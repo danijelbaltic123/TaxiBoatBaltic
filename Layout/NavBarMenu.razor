@@ -1,0 +1,63 @@
+﻿<nav class="navbar">
+	<div class="navbar-container">
+		<div class="navbar-logo">
+			<img src="/images/Logo bez pozadine topshit.png" />
+		</div>
+		<button class="hamburger-menu" @onclick="ToggleMenu">
+			<span class="bar"></span>
+			<span class="bar"></span>
+			<span class="bar"></span>
+		</button>
+
+		<div class="navbar-menu @menuClass" @onclick="@(menuOpen ? CloseMenu : ToggleMenu)">
+			<a href="#" class="navbar-item">Taxi Baot Baltić</a>
+			<a href="#" class="navbar-item">All-day Tours</a>
+			<a href="#" class="navbar-item">Half-day Tours</a>
+			<a href="#" class="navbar-item">Rent a Boat</a>
+			<a href="#" class="navbar-item">Rent a Scooter</a>
+			<a href="#" class="navbar-item">Speed Boat Service</a>
+		</div>
+		<div class="navbar-language" tabindex="0" @onblur="CloseLanguageDropdownOnBlur">
+			<div class="dropdown">
+				<button class="dropdown-toggle" @onclick="ToggleLanguageDropdown">
+					<Blazicon Svg="FlagIcon4x3.Gb"></Blazicon>
+				</button>
+				<div class="dropdown-menu">
+					<a href="#" class="navbar-item"> <Blazicon Svg="FlagIcon4x3.Gb"></Blazicon> English</a> <br />
+					<a href="#" class="navbar-item"> <Blazicon Svg="FlagIcon4x3.Hr"></Blazicon> Hrvatski </a><br />
+					<a href="#" class="navbar-item"> <Blazicon Svg="FlagIcon4x3.De"></Blazicon> Deutsch</a><br />
+					<a href="#" class="navbar-item"> <Blazicon Svg="FlagIcon4x3.It"></Blazicon> Italiano</a><br />
+				</div>
+			</div>
+		</div>
+	</div>
+</nav>
+@code {
+	private bool menuOpen = false;
+	private bool languageDropdownOpen = false;
+
+	private string menuClass => menuOpen ? "show" : "hide";
+	private string languageDropdownClass => languageDropdownOpen ? "show" : "hide";
+
+	private void ToggleMenu()
+	{
+		menuOpen = !menuOpen;
+		languageDropdownOpen = false; // Close language dropdown if menu opens
+	}
+
+	private void ToggleLanguageDropdown()
+	{
+		languageDropdownOpen = !languageDropdownOpen;
+		menuOpen = false; // Close menu if language dropdown opens
+	}
+
+	private void CloseMenu()
+	{
+		menuOpen = false;
+	}
+
+	private void CloseLanguageDropdownOnBlur(FocusEventArgs e)
+	{
+		languageDropdownOpen = false;
+	}
+}

@@ -1,0 +1,79 @@
+﻿@page "/"
+
+<PageTitle>Home</PageTitle>
+
+
+<div class="carousel-container" @onmouseover="PauseCarousel" @onmouseout="ResumeCarousel">
+    <div class="carousel-wrapper" style="transform: @(TranslateX); transition: transform 0.5s ease;">
+        @foreach (var card in cards)
+        {
+            <div class="carousel-card">
+                <h3>@card.Title</h3>
+                <p>@card.Description</p>
+                <img src="@card.ImageUrl" alt="@card.Title" />
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<Card> cards = new()
+    {
+        new Card { Title = "Card 1", Description = "This is card 1", ImageUrl = "/images/Logo bez pozadine topshit.png" },
+        new Card { Title = "Card 2", Description = "This is card 2", ImageUrl = "/images/Logo bez pozadine topshit.png" },
+        new Card { Title = "Card 3", Description = "This is card 3", ImageUrl = "/images/Logo bez pozadine topshit.png" },
+        new Card { Title = "Card 4", Description = "This is card 4", ImageUrl = "/images/Logo bez pozadine topshit.png" },
+        new Card { Title = "Card 5", Description = "This is card 5", ImageUrl = "/images/Logo bez pozadine topshit.png" },
+    };
+
+    private int currentIndex = 0;
+    private Timer? carouselTimer;
+    private bool isPaused = false;
+
+    private string TranslateX => $"translateX(-{currentIndex * 100}%)";
+
+    protected override void OnInitialized()
+    {
+        StartCarousel();
+    }
+
+    private void StartCarousel()
+    {
+        carouselTimer = new Timer(SwitchToNextCard, null, TimeSpan.FromSeconds(8), TimeSpan.FromSeconds(10));
+    }
+
+    private void PauseCarousel()
+    {
+        isPaused = true;
+        carouselTimer?.Change(Timeout.Infinite, Timeout.Infinite);
+    }
+
+    private void ResumeCarousel()
+    {
+        isPaused = false;
+        carouselTimer?.Change(TimeSpan.FromSeconds(8), TimeSpan.FromSeconds(8));
+    }
+
+    private void SwitchToNextCard(object? state)
+    {
+        if (!isPaused)
+        {
+            InvokeAsync(() =>
+            {
+                currentIndex = (currentIndex + 1) % cards.Count;
+                StateHasChanged();
+            });
+        }
+    }
+
+    public void Dispose()
+    {
+        carouselTimer?.Dispose();
+    }
+    public class Card
+    {
+        public string Title { get; set;  }
+        public string Description { get; set; }
+        public string ImageUrl { get; set; }
+    }
+}
