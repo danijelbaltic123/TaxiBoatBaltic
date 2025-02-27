@@ -1,0 +1,234 @@
+﻿@using System.Timers
+@inject IJSRuntime JS
+
+
+<div class="carousel">
+    <button class="nav-button left" @onclick="PreviousCards">&lt;</button>
+
+    <div class="carousel-track">
+        @foreach (var card in Cards.Select((c, i) => new { Card = c, Index = i }))
+        {
+            <div class="carousel-item @(card.Index == currentIndex ? "active" : (card.Index == PreviousIndex() ? "prev" : "next"))" @key="card.Index">
+                <img src="@card.Card.ImageUrl" class="carousel-image" />
+                <h2 class="carousel-title">@card.Card.Title</h2>
+                <div class="separator" style="width: 0%;"></div>
+                <p class="carousel-description">@card.Card.Description</p>
+            </div>
+        }
+    </div>
+
+    <button class="nav-button right" @onclick="NextCards">&gt;</button>
+
+    <div class="carousel-indicators">
+        @for (int i = 0; i < Cards.Count; i++)
+        {
+            int index = i;
+            <span class="dot @(currentIndex == index ? "active" : "")" @onclick="async () => await SetSlide(index)"></span>
+        }
+    </div>
+</div>
+
+@code {
+    public List<Card> Cards { get; set; } = new List<Card>();
+
+    private int currentIndex = 0;
+    private Timer timer;
+    private bool isAnimating = false;
+    private bool isFirstLoad = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        int windowWidth = await JS.InvokeAsync<int>("getWindowWidth");
+        bool isMobile = windowWidth < 800;
+
+        Cards = new List<Card>()
+        {
+            new Card() { 
+                Title = "Speed Boat Services",
+                Description = "Exclusive speed boat tours.",
+                ImageUrl = isMobile ? "images/SpeedBoatServiceMobile.svg" : "images/SpeedBoatService.svg"
+            },
+            new Card() { 
+                Title = "Rent a Boat", 
+                Description = "Explore the sea your way.", 
+                ImageUrl = isMobile ?  "images/RentABoatMobile.svg" : "images/RentABoat.svg"
+            },
+            new Card() { 
+                Title = "All Day Tours", 
+                Description = "Enjoy a full day on the water.", 
+                ImageUrl = isMobile ? "images/AllDayToursMobile.svg" : "images/AllDayTours.svg"
+            },
+            new Card() { 
+                Title = "Half Day Tours", 
+                Description = "Perfect for quick adventures.", 
+                ImageUrl = isMobile ? "images/HalfDayToursMobile.svg" : "images/HalfDayTours.svg"
+            },
+            new Card() { 
+                Title = "Scooter Rentals", 
+                Description = "Explore the city with ease.", 
+                ImageUrl = isMobile ?  "images/RentAScooterMobile.svg" : "images/RentAScooter.svg"
+            }
+        };
+        InvokeAsync(StateHasChanged);
+        timer = new Timer(6000);
+        timer.Elapsed += async (sender, e) => await AnimateTransition();
+        timer.Start();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("collapseSeparator"); // Sakrij separator
+            await JS.InvokeVoidAsync("hideText"); // Sakrij tekst
+            await Task.Delay(500);
+
+            await JS.InvokeVoidAsync("expandSeparator");
+            await Task.Delay(500);
+            await JS.InvokeVoidAsync("showText");
+
+            isFirstLoad = false;
+        }
+    }
+
+    private async Task AnimateTransition()
+    {
+        if (isAnimating) return;
+        isAnimating = true;
+
+        // 1. Sakrijemo tekst
+        await JS.InvokeVoidAsync("hideText");
+        await Task.Delay(500);
+
+        // 2. Sakrij separator liniju
+        await JS.InvokeVoidAsync("collapseSeparator");
+        await Task.Delay(500);
+
+        // 3. Smanjimo sliku za 40%
+        await JS.InvokeVoidAsync("shrinkImage");
+        await Task.Delay(800);
+
+        // 4. Promijenimo slajd
+        currentIndex = (currentIndex + 1) % Cards.Count;
+        InvokeAsync(StateHasChanged);
+        await Task.Delay(50);
+
+        // 5. Povećamo novu sliku na 100%
+        await JS.InvokeVoidAsync("growImage");
+        await Task.Delay(800);
+
+        await Task.Delay(300);
+
+        // 6. Prikazujemo separator liniju
+        await JS.InvokeVoidAsync("expandSeparator");
+        await Task.Delay(800);
+
+        // 7. Prikazujemo novi tekst
+        await JS.InvokeVoidAsync("showText");
+        await Task.Delay(500);
+
+        isAnimating = false;
+    }
+
+    private async Task NextCards()
+    {
+        if (!isAnimating)
+        {
+            await AnimateTransition();
+        }
+    }
+
+    private async Task PreviousCards()
+    {
+        if (isAnimating) return;
+
+        isAnimating = true;
+        Console.WriteLine($"Prije: currentIndex = {currentIndex}");
+
+        // 1. Sakrijemo tekst
+        await JS.InvokeVoidAsync("hideText");
+        await Task.Delay(500);
+
+        // 2. Sakrij separator liniju
+        await JS.InvokeVoidAsync("collapseSeparator");
+        await Task.Delay(500);
+
+        // 3. Smanjimo sliku za 40%
+        await JS.InvokeVoidAsync("shrinkImage");
+        await Task.Delay(800);
+
+        // 4. Promijenimo slajd na prethodni
+        currentIndex = (currentIndex - 1 + Cards.Count) % Cards.Count;
+        InvokeAsync(StateHasChanged);
+        await Task.Delay(50);
+
+        // 5. Povećamo novu sliku na 100%
+        await JS.InvokeVoidAsync("growImage");
+        await Task.Delay(800);
+
+        await Task.Delay(100);
+
+        // 6. Prikazujemo separator liniju
+        await JS.InvokeVoidAsync("expandSeparator");
+        await Task.Delay(500);
+
+        // 7. Prikazujemo novi tekst
+        await JS.InvokeVoidAsync("showText");
+
+        isAnimating = false;
+    }
+
+    private async Task SetSlide(int index)
+    {
+        if (isAnimating || index == currentIndex) return;
+
+        isAnimating = true;
+
+        try {
+            await Task.Delay(100); // Čekaj da DOM završi s renderiranjem
+
+            // 1. Sakrijemo tekst
+            await JS.InvokeVoidAsync("hideText");
+            await Task.Delay(500);
+
+            // 2. Sakrijemo separator liniju
+            await JS.InvokeVoidAsync("collapseSeparator");
+            await Task.Delay(500);
+
+            // 3. Smanjimo sliku za 40%
+            await JS.InvokeVoidAsync("shrinkImage");
+            await Task.Delay(800);
+
+            // 4. Postavimo `currentIndex` na kliknutu točku
+            currentIndex = index;
+
+            // Ponovno renderiranje
+            await InvokeAsync(StateHasChanged);
+            await Task.Delay(50);
+
+            // 5. Povećamo novu sliku na 100%
+            await JS.InvokeVoidAsync("growImage");
+            await Task.Delay(800);
+
+            // 6. Prikazujemo separator liniju
+            await JS.InvokeVoidAsync("expandSeparator");
+            await Task.Delay(500);
+
+            // 7. Prikazujemo novi tekst
+            await JS.InvokeVoidAsync("showText");
+
+            isAnimating = false;
+        } catch (Exception ex){
+            Console.WriteLine($"Greška u SetSlide: {ex.Message}");
+        }
+    }
+
+    private int PreviousIndex() => (currentIndex - 1 + Cards.Count) % Cards.Count;
+
+    public class Card
+    {
+        public string Title { get; set; }
+        public string ImageUrl { get; set; }
+        public string Description { get; set; }
+    }
+}
