@@ -89,3 +89,15 @@ window.growImage = function () {
 window.getWindowWidth = () => {
     return window.innerWidth;
 };
+
+window.setNavbarScrollEffect = (dotNetHelper) => {
+    const navbar = document.getElementById("mainNavbar");
+
+    function checkScroll() {
+        const atTop = window.scrollY < 50;
+        dotNetHelper.invokeMethodAsync("UpdateNavbarState", atTop);
+    }
+
+    window.addEventListener("scroll", checkScroll);
+    checkScroll(); // Pokreni odmah da postavi početno stanje
+};

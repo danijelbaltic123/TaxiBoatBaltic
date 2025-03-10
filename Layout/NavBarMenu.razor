@@ -1,4 +1,7 @@
-﻿<nav class="navbar">
+﻿@inject NavigationManager Navigation
+@inject	IJSRuntime JS
+
+<nav class="navbar @(IsHomePage ? (IsAtTop ? "transparent" : "solid") : "other")">
 	<div class="navbar-container">
 		<div class="navbar-logo">
 			<img src="/Logo bez pozadine topshit.png" />
@@ -10,12 +13,12 @@
 		</button>
 
 		<div class="navbar-menu @menuClass" @onclick="@(menuOpen ? CloseMenu : ToggleMenu)">
-			<a href="#" class="navbar-item">Taxi Baot Baltić</a>
-			<a href="#" class="navbar-item">All-day Tours</a>
-			<a href="#" class="navbar-item">Half-day Tours</a>
-			<a href="#" class="navbar-item">Rent a Boat</a>
-			<a href="#" class="navbar-item">Rent a Scooter</a>
-			<a href="#" class="navbar-item">Speed Boat Service</a>
+			<a href="" class="navbar-item">Taxi Boat Baltić</a>
+			<a href="/all-day-tours" class="navbar-item">All-day Tours</a>
+			<a href="/half-day-tours" class="navbar-item">Half-day Tours</a>
+			<a href="/rent-a-boat" class="navbar-item">Rent a Boat</a>
+			<a href="/rent-a-scooter" class="navbar-item">Rent a Scooter</a>
+			<a href="" class="navbar-item">Speed Boat Service</a>
 		</div>
 		<div class="navbar-language" tabindex="0" @onblur="CloseLanguageDropdownOnBlur">
 			<div class="dropdown">
@@ -33,11 +36,28 @@
 	</div>
 </nav>
 @code {
+	private bool IsHomePage => Navigation.Uri.EndsWith("/");
+	private bool IsAtTop = true;
 	private bool menuOpen = false;
 	private bool languageDropdownOpen = false;
 
 	private string menuClass => menuOpen ? "show" : "hide";
 	private string languageDropdownClass => languageDropdownOpen ? "show" : "hide";
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			await JS.InvokeVoidAsync("setNavbarScrollEffect", DotNetObjectReference.Create(this));
+		}
+	}
+
+	[JSInvokable]
+	public void UpdateNavbarState(bool atTop)
+	{
+		IsAtTop = atTop;
+		StateHasChanged();
+	}
 
 	private void ToggleMenu()
 	{
