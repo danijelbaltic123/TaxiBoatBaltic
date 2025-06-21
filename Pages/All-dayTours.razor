@@ -1,18 +1,103 @@
 ﻿@page "/all-day-tours"
 
-<PageTitle>All-day Tours</PageTitle>
+@using Microsoft.JSInterop
+@using TaxiBoatBaltic.Components
 
-<h1>All-day Tours</h1>
+<h2 class="tour-title">All-day Tours</h2>
 
-<p role="status">Current count: @currentCount</p>
+<div class="tour-tabs">
+	<button class="tour-tab @(activeTab == 0 ? "active" : "")" @onclick="() => SetTab(0)">NP Kornati</button>
+	<button class="tour-tab @(activeTab == 1 ? "active" : "")" @onclick="() => SetTab(1)">NP Krka + Riviera</button>
+	<button class="tour-tab @(activeTab == 2 ? "active" : "")" @onclick="() => SetTab(2)">Šibenik Archipelago</button>
+</div>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<div class="tour-content">
+	@if (activeTab == 0)
+	{
+		<KornatiMapComponent />
+	}
+	else if (activeTab == 1)
+	{
+		<KrkaRivieraMapComponent />
+	}
+	else if (activeTab == 2)
+	{
+		<ArchipelagoMapComponent />
+	}
+</div>
+<div>
+    <h2 class="secondary-heading">Some expiriance from our All-day tuors</h2>
+    <div class="carousel-container">
+        <div class="carousel">
+            <button class="nav-button prev" @onclick="GoToPrev">&#10094;</button>
+
+            <div class="slide">
+                @if (Images != null && Images.Count > 0)
+                {
+                    <img src="@Images[CurrentIndex]" alt="Slide @(CurrentIndex + 1)" />
+                }
+            </div>
+
+            <button class="nav-button next" @onclick="GoToNext">&#10095;</button>
+        </div>
+
+        @if (Images != null && Images.Count > 0)
+        {
+            <div class="dots-container">
+                @foreach (var (image, index) in Images.Select((img, idx) => (img, idx)))
+                {
+                    <span class="@GetDotClass(index)"
+                          @onclick="@(() => GoToSlide(index))"
+                          @key="index"></span>
+                }
+            </div>
+        }
+    </div>
+</div>
 
 @code {
-    private int currentCount = 0;
+	private int activeTab = 0;
 
-    private void IncrementCount()
+	private void SetTab(int index)
+	{
+		activeTab = index;
+	}
+
+    public List<string> Images { get; set; } = new(){
+        "images/Šibenik_city.jpg",
+        "images/Sunset.jpg",
+        "images/Labudi.jpg",
+        "images/Zlarin_vožnja.jpeg",
+        "images/Tijašnica_plivanje.jpg",
+        "images/Zlarin-sidrenje.jpeg",
+        "images/Rainbow.jpg"
+    };
+
+    [Parameter]
+    public int CurrentIndex { get; set; } = 0;
+
+    private string GetDotClass(int index)
     {
-        currentCount++;
+        return index == CurrentIndex ? "dot active" : "dot";
+    }
+
+    private void GoToPrev()
+    {
+        if (Images.Count == 0) return;
+        CurrentIndex = (CurrentIndex == 0) ? Images.Count - 1 : CurrentIndex - 1;
+    }
+
+    private void GoToNext()
+    {
+        if (Images.Count == 0) return;
+        CurrentIndex = (CurrentIndex == Images.Count - 1) ? 0 : CurrentIndex + 1;
+    }
+
+    private void GoToSlide(int index)
+    {
+        if (index >= 0 && index < Images.Count)
+        {
+            CurrentIndex = index;
+        }
     }
 }

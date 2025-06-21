@@ -1,7 +1,7 @@
 ﻿@inject NavigationManager Navigation
-@inject	IJSRuntime JS
+@inject IJSRuntime JS
 
-<nav class="navbar @(IsHomePage ? (IsAtTop ? "transparent" : "solid") : "other")">
+<nav class="navbar @(IsHomePage ? (IsAtTop ? "transparent" : "solid") : "other")" id="mainNavbar">
 	<div class="navbar-container">
 		<div class="navbar-logo">
 			<img src="/Logo bez pozadine topshit.png" />
@@ -49,7 +49,14 @@
 		if (firstRender)
 		{
 			await JS.InvokeVoidAsync("setNavbarScrollEffect", DotNetObjectReference.Create(this));
+			Navigation.LocationChanged += async (sender, args) => await OnLocationChanged();
 		}
+	}
+
+	private async Task OnLocationChanged()
+	{
+		await JS.InvokeVoidAsync("resetNavbarState");
+		StateHasChanged();
 	}
 
 	[JSInvokable]

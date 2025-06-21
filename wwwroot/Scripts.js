@@ -26,7 +26,7 @@ window.showText = function () {
         setTimeout(() => {
             title.style.transform = "translateY(0)";
             title.style.opacity = "1";
-        }, 50); 
+        }, 50);
     }
 
     if (description) {
@@ -86,6 +86,27 @@ window.growImage = function () {
     img.style.transform = "scale(1)";
 };
 
+window.resetCarouselState = () => {
+    if (window.shrinkImage) {
+        window.shrinkImage(); // Resetiraj slike
+    }
+    if (window.hideText) {
+        window.hideText(); // Sakrij tekst
+    }
+    if (window.collapseSeparator) {
+        window.collapseSeparator(); // Sakrij separator
+    }
+    setTimeout(() => {
+        if (window.expandSeparator) {
+            window.expandSeparator(); // Prikaži separator
+        }
+        if (window.showText) {
+            window.showText(); // Prikaži tekst
+        }
+    }, 500);
+};
+
+
 window.getWindowWidth = () => {
     return window.innerWidth;
 };
@@ -100,4 +121,12 @@ window.setNavbarScrollEffect = (dotNetHelper) => {
 
     window.addEventListener("scroll", checkScroll);
     checkScroll(); // Pokreni odmah da postavi početno stanje
+};
+
+window.resetNavbarState = () => {
+    window.scrollTo(0, 0); // Resetiraj scroll na vrh
+    setTimeout(() => {
+        const event = new Event("scroll");
+        window.dispatchEvent(event); // Forsiraj ponovnu provjeru
+    }, 50);
 };
