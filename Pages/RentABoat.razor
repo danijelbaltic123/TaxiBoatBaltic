@@ -2,17 +2,131 @@
 
 <PageTitle>Rent a Boat</PageTitle>
 
-<h1>Rent a boat</h1>
+<div class="rent-boat-title">
+	<h1>Rent a boat in Šibenik</h1>
+	<h2>Explore our fleet</h2>
+</div>
+<div class="content-wrapper">
+	<div class="boat-list">
+		@foreach (var boat in Boats)
+		{
+			<div class="boat-card">
+				<img src="@boat.ImageUrl" alt="@boat.Name" class="boat-image" />
 
-<p role="status">Current count: @currentCount</p>
+				<div class="boat-info">
+					<h2>@boat.Name</h2>
+					<p class="price">@boat.PricePerDay.ToString("0.00") € / day</p>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+					<div class="boat-specs">
+						<div><strong>Lenght:</strong> @boat.Length m</div>
+						<div><strong>Capacity:</strong> @boat.Capacity person</div>
+						<div><strong>Width:</strong> @boat.Width m</div>
+						<div>
+							<strong>Engine:</strong> @boat.EnginePower HP
+							<img src="@boat.EngineLogo" alt="@boat.EngineBrand" class="engine-image" />
+						</div>
+					</div>
 
+					<div class="buttons">
+						<button class="book-button">Book now</button>
+						<button class="more-button" @onclick="() => ToggleDetails(boat)">@(boat.ShowMore ? "Show less" : "More info")</button>
+					</div>
+
+					@if (boat.ShowMore)
+					{
+						<div class="boat-details">
+							<div><strong>Fuel capacity:</strong> @boat.Fuel L</div>
+							<div><strong>Shower:</strong> @boat.Shower</div>
+							<div><strong>Sink:</strong> @boat.Sink</div>
+							<div><strong>Water capacity:</strong> @boat.Water L</div>
+							<div><strong>GPS:</strong> @boat.GPS</div>
+							<div><strong>Transducer:</strong> @boat.Transducer</div>
+
+						</div>
+					}
+				</div>
+			</div>
+		}
+	</div>
+
+	<div class="notice-section">
+		<ImportantNotice />
+	</div>
+</div>
 @code {
-    private int currentCount = 0;
+	private List<Boat> Boats = new()
+	{
+		new Boat {
+			Name = "Mia",
+			Length = 6.7,
+			Width = 2.6,
+			PricePerDay = 300,
+			Fuel = 98,
+			EnginePower = 200,
+			EngineBrand = "Yamaha",
+			EngineLogo = "images/Yamaha.png",
+			Capacity = 9,
+			Water = 75,
+			Shower = "Yes",
+			Sink = "Yes",
+			GPS = "GARMIN echoMAP UHD2",
+			Transducer = "Garmin GT20",
+			ImageUrl = "images/Mia.jpg" },
+		new Boat {
+			Name = "Emanuela",
+			Length = 6.5,
+			Width = 2.5,
+			Fuel= 98,
+			PricePerDay = 300,
+			EnginePower = 150,
+			EngineBrand = "Yamaha",
+			EngineLogo = "images/Yamaha.png",
+			Capacity = 8,
+			Water = 97,
+			Shower = "Yes",
+			Sink = "No",
+			GPS = "GARMIN echoMAP UHD2",
+			Transducer = "Garmin GT20",
+			ImageUrl = "images/Emanuela.jpg" },
+		new Boat {
+			Name = "Andrea",
+			Length = 6.2,
+			Width = 2.3,
+			Fuel = 95,
+			PricePerDay = 250,
+			EnginePower = 130,
+			EngineBrand = "Yamaha",
+			EngineLogo = "images/Yamaha.png",
+			Shower = "No",
+			Sink = "No",
+			GPS = "GARMIN echoMAP UHD2",
+			Transducer = "Garmin GT20",
+			Capacity = 8,
+			ImageUrl = "images/Andrea.jpg" }
+	};
 
-    private void IncrementCount()
-    {
-        currentCount++;
-    }
+	private void ToggleDetails(Boat boat)
+	{
+		boat.ShowMore = !boat.ShowMore;
+	}
+
+	private class Boat
+	{
+		public string Name { get; set; } = "";
+		public double Length { get; set; }
+		public double Width { get; set; }
+		public int EnginePower { get; set; }
+		public string EngineBrand { get; set; } = "";
+		public string ImageUrl { get; set; } = "";
+		public bool ShowMore { get; set; } = false;
+		public decimal PricePerDay { get; set; }
+		public string EngineLogo { get; set; } = "";
+		public int Capacity { get; set; }
+		public double Fuel { get; set; }
+		public string Shower { get; set; } = "";
+		public string Sink { get; set; } = "";
+		public double Water { get; set; }
+		public string GPS { get; set; } = "";
+		public string Transducer { get; set; } = "";
+	}
 }

@@ -108,6 +108,7 @@
         // 3. Smanjimo sliku za 40%
         await JS.InvokeVoidAsync("shrinkImage");
         await Task.Delay(800);
+        await Task.Delay(300);
 
         // 4. Promijenimo slajd
         currentIndex = (currentIndex + 1) % Cards.Count;
@@ -118,7 +119,7 @@
         await JS.InvokeVoidAsync("growImage");
         await Task.Delay(800);
 
-        await Task.Delay(300);
+        
 
         // 6. Prikazujemo separator liniju
         await JS.InvokeVoidAsync("expandSeparator");
@@ -209,7 +210,7 @@
 
             // 5. Povećamo novu sliku na 100%
             await JS.InvokeVoidAsync("growImage");
-            await Task.Delay(800);
+            await Task.Delay(1100);
 
             // 6. Prikazujemo separator liniju
             await JS.InvokeVoidAsync("expandSeparator");

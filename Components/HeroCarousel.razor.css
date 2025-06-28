@@ -38,7 +38,7 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        transition: transform 1s ease;
+        transition: transform 2s ease;
         position: absolute;
         filter: brightness(50%);
     }
@@ -52,13 +52,13 @@
 
     /* LIJEVI I DESNI SLIDE */
     .carousel-item.prev {
-        opacity: 0.6;
+        opacity: 0;
         transform: scale(0.6) translateX(-120%);
         z-index: 1;
     }
 
     .carousel-item.next {
-        opacity: 0.6;
+        opacity:0;
         transform: scale(0.6) translateX(120%);
         z-index: 1;
     }
@@ -72,7 +72,7 @@
     height: 2px;
     background-color: white;
     opacity: 0;
-    transition: width 0.5s ease-in-out, opacity 0.3s ease-in-out;
+    transition: width 0.5s ease-in-out, opacity 0.5s ease-in-out;
     transform: translate(-50%, -50%);
 }
 

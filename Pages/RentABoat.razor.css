@@ -1,0 +1,131 @@
+﻿.rent-boat-title {
+    text-align: center;
+    padding: 1rem;
+    color: #2c3e50;
+}
+.boat-list {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    max-width: 100%;
+    margin: auto;
+    padding: 20px;
+}
+
+.boat-card {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    background-color: #d8ebf5;
+    border-radius: 16px;
+    border: 2px solid #2c3e50;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    overflow: hidden;
+    padding: 16px;
+}
+
+.boat-image {
+    width: 300px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.boat-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.price {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #007B5E;
+}
+
+.boat-specs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 16px;
+    margin: 10px 0;
+}
+
+.buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.book-button {
+    background-color: #007B5E;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.more-button {
+    background-color: transparent;
+    border: 2px solid #007B5E;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.boat-details {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #ccc;
+    color: #333;
+}
+
+.engine-image {
+    width:5rem;
+    height:1rem;
+}
+
+.content-wrapper {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 20px;
+    flex-wrap: nowrap;
+}
+
+.boat-section {
+    flex: 1 1 70;
+    max-width: 70%;
+}
+
+.notice-section {
+    flex: 0 0 300px;
+    max-width:300px;
+    position: sticky;
+    top: 50px;
+    padding:1rem;
+}
+@media (max-width: 991px) {
+    .boat-card{
+        flex-direction:column;
+    }
+    .boat-image{
+        width:100%;
+    }
+    .content-wrapper {
+        flex-direction: column;
+    }
+
+    .boat-section, .notice-section {
+        max-width: 100%;
+    }
+
+    .notice-section {
+        position: static;
+        margin-top: 20px;
+    }
+}
