@@ -544,3 +544,43 @@ window.initPanoramaTourMap = () => {
             `);
     });
 };
+
+window.initLocationMap = () => {
+    const map = L.map('LocationMap').setView([43.72, 15.8], 11);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    const route = [
+        [43.7338, 15.8910],  // Šibenik
+    ];
+
+    const polyline = L.polyline(route, {
+        color: '#ff0f21',
+        weight: 5,
+        opacity: 0.9,
+        lineJoin: 'round'
+    }).addTo(map);
+
+    map.fitBounds(polyline.getBounds());
+
+    const stops = [
+        {
+            coords: [43.7338, 15.8910],
+            title: "Šibenik waterfront",
+            description: "When we're not at sea, we're usually here by the boat or at the information desk.",
+            image: "/Logo bez pozadine topshit.png"
+        }
+    ];
+
+    stops.forEach(stop => {
+        L.marker(stop.coords)
+            .addTo(map)
+            .bindPopup(`
+            <b>${stop.title}</b><br>
+            <img src="${stop.image}" width="120" style="border-radius:8px;"><br>
+            ${stop.description}
+            `);
+    });
+};

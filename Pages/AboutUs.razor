@@ -1,0 +1,34 @@
+﻿@inject IJSRuntime JS
+@page "/about-us"
+<section class="about-us">
+	<div class="about-intro">
+		<h2>Who we are?</h2>
+		<p>
+			We are a small family business that started in 2018 offering speed boat services. Before starting work we always loved to explore the coast of Šibenik and it always surprised us with its beauty. The sea has always attracted us, both me and my father, so we came up with the idea to offer excursions and taxi services at sea.
+			You can also, if you have a driver’s license for a category B boat, rent one of our boats and explore on your own.
+		</p>
+	</div>
+	<div class="about-location">
+		<div class="location-info">
+			<h2>Where we are?</h2>
+			<p>📍 Adress: Obala hrvatske mornarice 1, 22000, Šibenik</p>
+			<p>🕒 Working hours: 09:00 – 20:00</p>
+			<p><a href="tel:+385919700418" class="location-number">📞 Tel: +385 91 9700 418</a></p>
+			<a href="https://maps.app.goo.gl/XZjXbBt5UXty7ECh7" target="_blank" class="map-btn">
+                Oppen in Google Maps
+            </a>
+		</div>
+		<div class="location-map">
+			<div id="LocationMap" class="map"></div>
+		</div>
+	</div>
+</section>
+@code {
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			await JS.InvokeVoidAsync("initLocationMap");
+		}
+	}
+}

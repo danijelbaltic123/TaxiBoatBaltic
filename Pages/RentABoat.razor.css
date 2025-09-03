@@ -1,8 +1,44 @@
 ﻿.rent-boat-title {
+    background-image: url('images/Kanal.jpeg'); /* stavi ovdje svoju sliku */
+    background-size: cover;
+    background-position: center;
+    position: relative;
     text-align: center;
-    padding: 1rem;
-    color: #2c3e50;
+    color: #fff;
+    padding: 5rem 2rem;
+    margin-bottom: 3rem;
+    border-radius: 0 0 32px 32px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
 }
+
+    .rent-boat-title:before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.55); /* overlay za bolju čitljivost teksta */
+        z-index: 0;
+    }
+
+    .rent-boat-title h1 {
+        position: relative;
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        z-index: 1;
+    }
+
+    .rent-boat-title h4 {
+        position: relative;
+        font-size: 1.4rem;
+        font-weight: 400;
+        z-index: 1;
+        opacity: 0.9;
+    }
+
 .boat-list {
     display: flex;
     flex-direction: column;
