@@ -14,12 +14,14 @@
 		</p>
 		<div class="cTa">
 			<p><b>Price: 500€</b></p>
-			<button><img src="/Icons/laptop.gif" /><b>Book here!</b></button>
+			<PopUpButton />
 		</div>
 	</div>
 </div>
 
 @code {
+	private BookingForm bookingPopup;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -27,4 +29,9 @@
             await JS.InvokeVoidAsync("initArchipelagoTourMap");
         }
     }
+
+	private void ShowPopup()
+	{
+		bookingPopup.Show();
+	}
 }

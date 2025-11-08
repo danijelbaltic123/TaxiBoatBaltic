@@ -22,7 +22,7 @@
 						<h3 class="scooter-name">@scooter.Name</h3>
 						<p class="scooter-cc">@scooter.Cc cc</p>
 						<p class="scooter-price">@scooter.PricePerDay€ / day</p>
-						<button class="reserve-btn">Rent me</button>
+						<button class="reserve-btn" @onclick=ShowPopup>Rent me</button>
 					</div>
 				</div>
 			}
@@ -32,8 +32,17 @@
 		</p>
 	</section>
 }
+<BookingForm @ref="bookingPopup">
 
-	@code {
+</BookingForm>
+
+@code {
+	private BookingForm bookingPopup;
+
+	private void ShowPopup()
+	{
+		bookingPopup.Show();
+	}
 	public class Scooter
 	{
 		public string Name { get; set; }

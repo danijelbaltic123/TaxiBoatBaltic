@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
     <link rel="stylesheet" href="css/app.css" />
-    <link rel="stylesheet" href="css/legal.css"/>
+    <link rel="stylesheet" href="css/legal.css" />
     <link rel="icon" type="image/png" href="Logo bez pozadine topshit.png" />
     <link href="TaxiBoatBaltic.styles.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -20,11 +20,19 @@
 
 <body>
     <div id="app">
-        <svg class="loading-progress">
-            <circle r="40%" cx="50%" cy="50%" />
-            <circle r="40%" cx="50%" cy="50%" />
-        </svg>
-        <div class="loading-progress-text"></div>
+        <div class="app-loading">
+            <div class="loading-circle-wrapper">
+                <svg class="loading-progress" viewBox="0 0 120 120">
+                    <circle class="bg-circle" cx="60" cy="60" r="54" />
+                    <circle class="progress-circle" cx="60" cy="60" r="54" />
+                </svg>
+                <img src="Logo bez pozadine topshit.png" alt="Taxi Boat Baltic logo" class="loading-logo" />
+            </div>
+            <p class="loading-text">
+                Preparing the waves...
+                <span class="loading-percentage">0%</span>
+            </p>
+        </div>
     </div>
 
     <div id="blazor-error-ui">
@@ -33,6 +41,28 @@
         <a class="dismiss">🗙</a>
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
+    <script>
+        (function () {
+            const circle = document.querySelector(".progress-circle");
+            const percentageText = document.querySelector(".loading-percentage");
+            const totalLength = 339.292;
+
+            const updateProgress = () => {
+                const progress = parseFloat(getComputedStyle(document.documentElement)
+                    .getPropertyValue("--blazor-load-percentage")) || 0;
+
+                const offset = totalLength - (totalLength * (progress / 100));
+                circle.style.strokeDashoffset = offset.toString();
+                percentageText.textContent = `${Math.floor(progress)}%`;
+            };
+
+            const observer = new MutationObserver(updateProgress);
+            observer.observe(document.documentElement, { attributes: true, attributeFilter: ["style"] });
+
+            updateProgress();
+        })();
+    </script>
+
     <script src="scripts.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="map.js"></script>
@@ -40,7 +70,8 @@
             integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
             crossorigin=""></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <div id="app">Loading...</div>
+    <div id="app">
+    </div>
 </body>
 
 </html>

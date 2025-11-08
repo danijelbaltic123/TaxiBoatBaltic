@@ -28,20 +28,21 @@
 					</div>
 
 					<div class="buttons">
-						<button class="book-button">Book now</button>
+						<button class="book-button" @onclick=ShowPopup>Book now</button>
 						<button class="more-button" @onclick="() => ToggleDetails(boat)">@(boat.ShowMore ? "Show less" : "More info")</button>
 					</div>
 
 					@if (boat.ShowMore)
 					{
 						<div class="boat-details">
+							<div><strong>Brand:</strong> @boat.Brand</div>
+							<div><strong>Model:</strong> @boat.Model</div>
 							<div><strong>Fuel capacity:</strong> @boat.Fuel L</div>
 							<div><strong>Shower:</strong> @boat.Shower</div>
 							<div><strong>Sink:</strong> @boat.Sink</div>
 							<div><strong>Water capacity:</strong> @boat.Water L</div>
 							<div><strong>GPS:</strong> @boat.GPS</div>
 							<div><strong>Transducer:</strong> @boat.Transducer</div>
-
 						</div>
 					}
 				</div>
@@ -52,8 +53,17 @@
 	<div class="notice-section">
 		<ImportantNotice />
 	</div>
+	<BookingForm @ref="bookingPopup">
+
+	</BookingForm>
 </div>
 @code {
+	private BookingForm bookingPopup;
+
+	private void ShowPopup()
+	{
+		bookingPopup.Show();
+	}
 	private List<Boat> Boats = new()
 	{
 		new Boat {
@@ -65,6 +75,8 @@
 			EnginePower = 200,
 			EngineBrand = "Yamaha",
 			EngineLogo = "images/Yamaha.png",
+			Brand = "Marinelo",
+			Model = "Eden 22 Open",
 			Capacity = 9,
 			Water = 75,
 			Shower = "Yes",
@@ -81,6 +93,8 @@
 			EnginePower = 150,
 			EngineBrand = "Yamaha",
 			EngineLogo = "images/Yamaha.png",
+			Brand = "Orizonti",
+			Model = "Nautilus",
 			Capacity = 8,
 			Water = 97,
 			Shower = "Yes",
@@ -97,11 +111,13 @@
 			EnginePower = 130,
 			EngineBrand = "Yamaha",
 			EngineLogo = "images/Yamaha.png",
+			Brand = "Gobi",
+			Model = "Open",
+			Capacity = 8,
 			Shower = "No",
 			Sink = "No",
 			GPS = "GARMIN echoMAP UHD2",
 			Transducer = "Garmin GT20",
-			Capacity = 8,
 			ImageUrl = "images/Andrea.jpg" }
 	};
 
@@ -128,5 +144,7 @@
 		public double Water { get; set; }
 		public string GPS { get; set; } = "";
 		public string Transducer { get; set; } = "";
+		public string Brand { get; set; } = "";
+		public string Model { get; set; } = "";
 	}
 }
