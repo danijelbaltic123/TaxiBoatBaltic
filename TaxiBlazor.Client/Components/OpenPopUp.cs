@@ -1,4 +1,6 @@
-﻿namespace TaxiBoatBaltic.Components
+﻿using TaxiBlazor.Client.Components;
+
+namespace TaxiBoatBaltic.Components
 {
     public class OpenPopUp
     {

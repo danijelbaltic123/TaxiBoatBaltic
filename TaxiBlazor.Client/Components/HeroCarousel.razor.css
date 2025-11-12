@@ -58,7 +58,7 @@
     }
 
     .carousel-item.next {
-        opacity:0;
+        opacity: 0;
         transform: scale(0.6) translateX(120%);
         z-index: 1;
     }
@@ -88,9 +88,9 @@
 
 .carousel-title {
     position: absolute;
-    font-size:5.5vw;
+    font-size: 5.5vw;
     top: 35%;
-    color:white;
+    color: white;
     transform: translateY(20px);
     opacity: 0;
     transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
@@ -100,7 +100,7 @@
     position: absolute;
     font-size: 2vw;
     top: 52%;
-    color:white;
+    color: white;
     transform: translateY(-20px);
     opacity: 0;
     transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
@@ -141,6 +141,7 @@
         opacity: 1;
     }
 }
+
 .text-container {
     animation: show-text 1s ease-in-out forwards;
 }
@@ -203,16 +204,26 @@
     }
 
 
+.carousel-image {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.carousel-item.active .carousel-image {
+    opacity: 1;
+}
+
 @media (max-width: 800px) {
     .carousel-title {
         font-size: 8vw;
-        top:43%;
+        top: 43%;
     }
 
-    .carousel-description{
+    .carousel-description {
         font-size: 4vw;
     }
-    .nav-button{
+
+    .nav-button {
         padding: 4px 15px;
         font-size: 1.5rem;
     }

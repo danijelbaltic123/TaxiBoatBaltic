@@ -1,4 +1,15 @@
-﻿
+﻿window.waitForImagesToLoad = async (selector) => {
+    const images = document.querySelectorAll(selector);
+    if (!images.length) return;
+
+    await Promise.all(Array.from(images).map(img => {
+        return img.complete ? Promise.resolve() : new Promise(resolve => {
+            img.addEventListener("load", resolve);
+            img.addEventListener("error", resolve);
+        });
+    }));
+};
+
 window.expandSeparator = function () {
     let separator = document.querySelector(".carousel-item.active .separator");
     if (separator) {
@@ -87,8 +98,12 @@ window.growImage = function () {
 };
 
 window.resetCarouselState = () => {
-    if (window.shrinkImage) {
-        window.shrinkImage(); // Resetiraj slike
+    const activeSlide = document.querySelector(".carousel-item.active");
+    if (activeSlide) {
+        const img = activeSlide.querySelector("img");
+        if (img) {
+            img.style.transform = "scale(1)";
+        }
     }
     if (window.hideText) {
         window.hideText(); // Sakrij tekst
@@ -122,6 +137,8 @@ window.setNavbarScrollEffect = (dotNetHelper) => {
     window.addEventListener("scroll", checkScroll);
     checkScroll(); // Pokreni odmah da postavi početno stanje
 };
+
+
 
 window.resetNavbarState = () => {
     window.scrollTo(0, 0); // Resetiraj scroll na vrh
