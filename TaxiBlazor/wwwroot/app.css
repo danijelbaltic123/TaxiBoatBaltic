@@ -112,7 +112,7 @@ a, .btn-link {
 .progress-circle {
     stroke: #1b6ec2;
     stroke-linecap: round;
-    stroke-dasharray: 339.292; /* 2 * PI * 54 */
+    stroke-dasharray: 339.292;
     stroke-dashoffset: 339.292;
     transition: stroke-dashoffset 0.1s linear;
 }
@@ -237,7 +237,6 @@ code {
         max-height: 2rem !important;
     }
 
-/* Dodajte u svoj CSS file ili u komponentu */
 .secondary-heading {
     text-align: center;
 }

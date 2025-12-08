@@ -84,7 +84,7 @@
 			await Task.Delay(200);
 			await JS.InvokeVoidAsync("showText");
 
-			timer = new Timer(6000);
+			timer = new Timer(7000);
 			timer.Elapsed += async (sender, e) => await AnimateTransition();
 			timer.Start();
 
@@ -109,7 +109,6 @@
 		// 3. Smanjimo sliku za 40%
 		await JS.InvokeVoidAsync("shrinkImage");
 		await Task.Delay(800);
-		await Task.Delay(300);
 
 		// 4. Promijenimo slajd
 		currentIndex = (currentIndex + 1) % Cards.Count;
@@ -118,17 +117,14 @@
 
 		// 5. Povećamo novu sliku na 100%
 		await JS.InvokeVoidAsync("growImage");
-		await Task.Delay(800);
-
-
+		await Task.Delay(1200);
 
 		// 6. Prikazujemo separator liniju
 		await JS.InvokeVoidAsync("expandSeparator");
-		await Task.Delay(800);
+		await Task.Delay(500);
 
 		// 7. Prikazujemo novi tekst
 		await JS.InvokeVoidAsync("showText");
-		await Task.Delay(500);
 
 		isAnimating = false;
 	}
@@ -167,9 +163,7 @@
 
 		// 5. Povećamo novu sliku na 100%
 		await JS.InvokeVoidAsync("growImage");
-		await Task.Delay(800);
-
-		await Task.Delay(100);
+		await Task.Delay(1200);
 
 		// 6. Prikazujemo separator liniju
 		await JS.InvokeVoidAsync("expandSeparator");
@@ -212,7 +206,7 @@
 
 			// 5. Povećamo novu sliku na 100%
 			await JS.InvokeVoidAsync("growImage");
-			await Task.Delay(1100);
+			await Task.Delay(1200);
 
 			// 6. Prikazujemo separator liniju
 			await JS.InvokeVoidAsync("expandSeparator");

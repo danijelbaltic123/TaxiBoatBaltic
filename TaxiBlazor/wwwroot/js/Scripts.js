@@ -78,7 +78,7 @@ window.shrinkImage = function () {
         return;
     }
 
-    img.style.transform = "scale(0.6)";
+    img.style.transform = "scale(0.5) translate(-50%)";
 };
 
 window.growImage = function () {
