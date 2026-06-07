@@ -1,8 +1,9 @@
 ﻿using System.Net.Http.Json;
-using System.Net.NetworkInformation;
+using TaxiBlazor.Shared.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using TaxiBoatBaltic.Components;
+using static System.Net.WebRequestMethods;
 namespace TaxiBlazor.Client.Components
 {
     public partial class BookingFormBase : ComponentBase
@@ -19,6 +20,9 @@ namespace TaxiBlazor.Client.Components
         protected bool IsSending = false;
         protected List<string> CurrentOptions = new();
         protected int MaxPeople { get; set; } = 8;
+        [Inject]
+        protected HttpClient Http { get; set; } = default!;
+
 
         protected readonly List<string> Transfers = new() {
              "Šibenik → Zlarin",
@@ -127,6 +131,21 @@ namespace TaxiBlazor.Client.Components
                     break;
             }
         }
+        public class StripeSessionResponse
+        {
+            public string Url { get; set; } = string.Empty;
+        }
+        private string GetStripePriceId()
+        {
+            return activeTab switch
+            {
+                1 => "price_boat_tour_test",
+                2 => "price_rent_boat_test",
+                _ => string.Empty
+            };
+        }
+
+
 
         protected async Task SubmitBooking()
         {
@@ -137,6 +156,26 @@ namespace TaxiBlazor.Client.Components
             ShowError = false;
             Status = "";
             StateHasChanged();
+
+            /*bool requiresPayment =
+                activeTab == 1 ||   // Private Boat Tour
+                activeTab == 2;     // Rent a Boat
+
+            if (requiresPayment)
+            {
+                var response = await Http.PostAsJsonAsync(
+                    "api/payment/create-checkout-session",
+                    new
+                    {
+                        priceId = GetStripePriceId(),
+                        redirectBaseUrl = Navigation.BaseUri
+                    });
+
+                var result = await response.Content.ReadFromJsonAsync<StripeSessionResponse>();
+
+                Navigation.NavigateTo(result!.Url, true);
+                return;
+            }*/
 
             var request = new
             {
@@ -179,13 +218,13 @@ namespace TaxiBlazor.Client.Components
         protected string GenerateClientHtml(BookingModel b)
         {
             return $@"
-<table width=""100%"" cellpadding=""0"" cellspacing=""0"" border=""0"" style=""background:#e8f6ff; padding:30px 0;"">
-<tr>
-<td align=""center"">
-    <table width=""600"" cellpadding=""0"" cellspacing=""0"" border=""0"" 
-           style=""background:#ffffff; border-radius:12px; padding:20px; font-family:Arial;"">
-        <tr style=""background:#2c3e50"">
-            <td align=""center"">
+                <table width=""100%"" cellpadding=""0"" cellspacing=""0"" border=""0"" style=""background:#e8f6ff; padding:30px 0;"">
+                    <tr>
+                        <td align=""center"">
+                <table width=""600"" cellpadding=""0"" cellspacing=""0"" border=""0"" 
+                    style=""background:#ffffff; border-radius:12px; padding:20px; font-family:Arial;"">
+                    <tr style=""background:#2c3e50"">
+                        <td align=""center"">
                 <img src=""https://taxiboatbaltic.hr/wp-content/uploads/2022/04/Logo-bez-pozadine-topshit.png"" 
                      alt=""Taxi Boat Baltic"" style=""height:90px; margin-bottom:10px;"">
                 <h2 style=""color:#0077cc; margin:0; font-size:22px;"">Your Reservation has been sent</h2>

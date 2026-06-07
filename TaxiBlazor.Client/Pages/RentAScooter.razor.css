@@ -1,6 +1,6 @@
 ﻿/* HERO SECTION - heading */
 .scooter-heading {
-    background-image: url('images/RentAScooter.svg'); /* stavi ovdje svoju sliku */
+    background-image: url('images/RentAScooter.svg');
     background-size: cover;
     background-position: center;
     position: relative;

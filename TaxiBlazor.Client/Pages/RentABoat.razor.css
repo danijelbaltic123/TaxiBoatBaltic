@@ -1,5 +1,5 @@
 ﻿.rent-boat-title {
-    background-image: url('C:\Users\Korisnik\Desktop\TaxiBoatBaltic_blazor\TaxiBoatBaltic\TaxiBlazor\wwwroot\images\Kanal.jpeg'); /* stavi ovdje svoju sliku */
+    background-image: url('images/Kanal.jpeg'); /* stavi ovdje svoju sliku */
     background-size: cover;
     background-position: center;
     position: relative;

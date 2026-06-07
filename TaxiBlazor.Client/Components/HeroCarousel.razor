@@ -1,234 +1,171 @@
 ﻿@using System.Timers
+@using TaxiBlazor.Shared.Services
 @inject IJSRuntime JS
-
+@inject PauseCarouselService CarouselService
+@implements IAsyncDisposable
 
 <div class="carousel">
-	<button class="nav-button left" @onclick="PreviousCards">&lt;</button>
+    @if (Cards.Count > 0)
+    {
+        @foreach (var card in Cards.Select((x, i) => new { x, i }))
+        {
+            var cls = GetItemClass(card.i);
+            <div class="@cls" aria-hidden="@(card.i != currentIndex && card.i != nextIndex)">
+                <img src="@card.x.ImageUrl"
+                     alt="@card.x.Title"
+                     class="carousel-image" />
 
-	<div class="carousel-track">
-		@foreach (var card in Cards.Select((c, i) => new { Card = c, Index = i }))
-		{
-			<div class="carousel-item @(card.Index == currentIndex ? "active" : (card.Index == PreviousIndex() ? "prev" : "next"))" @key="card.Index">
-				<img src="@card.Card.ImageUrl" class="carousel-image" />
-				<h2 class="carousel-title">@card.Card.Title</h2>
-				<div class="separator" style="width: 0%;"></div>
-				<p class="carousel-description">@card.Card.Description</p>
-			</div>
-		}
-	</div>
+                <div class="carousel-overlay">
+                    <h2 class="carousel-title top">
+                        @card.x.Title
+                    </h2>
 
-	<button class="nav-button right" @onclick="NextCards">&gt;</button>
+                    <div class="separator"></div>
 
-	<div class="carousel-indicators">
-		@for (int i = 0; i < Cards.Count; i++)
-		{
-			int index = i;
-			<span class="dot @(currentIndex == index ? "active" : "")" @onclick="async () => await SetSlide(index)"></span>
-		}
-	</div>
+                    <p class="carousel-title bottom">
+                        @card.x.Description
+                    </p>
+                </div>
+            </div>
+        }
+    }
+
+    <button class="nav-button left" @onclick="PreviousCards">&#10094;</button>
+    <button class="nav-button right" @onclick="NextCards">&#10095;</button>
+
+    <div class="carousel-dots">
+        @for (int i = 0; i < Cards.Count; i++)
+        {
+            int dotIndex = i;
+            <span class="dot @(currentIndex == dotIndex ? "active" : "")"
+                  @onclick="() => SetSlide(dotIndex)"></span>
+        }
+    </div>
 </div>
 
 @code {
-	public List<Card> Cards { get; set; } = new List<Card>();
-	private int currentIndex = 0;
-	private Timer timer;
-	private bool isAnimating = false;
-	private bool isFirstLoad = true;
+    private List<Card> Cards = new();
+    private int currentIndex = 0;
+    private int nextIndex = -1;
+    private int prevIndex = -1;
+    private Timer? timer;
+    private bool isAnimating;
+    private bool _disposed;
 
-	protected override async Task OnAfterRenderAsync(bool firstRender)
-	{
-		if (firstRender)
-		{
-			int windowWidth = await JS.InvokeAsync<int>("getWindowWidth");
-			bool isMobile = windowWidth < 800;
+    // timings (ms) - tune as needed
+    private readonly int enterMs = 900;
+    private readonly int showMs = 3200;
+    private readonly int exitMs = 900;
 
-			Cards = new List<Card>()
-		{
-			new Card() {
-				Title = "Speed Boat Services",
-				Description = "Exclusive speed boat tours.",
-				ImageUrl = isMobile ? "images/SpeedBoatServiceMobile.svg" : "images/SpeedBoatService.svg"
-			},
-			new Card() {
-				Title = "Rent a Boat",
-				Description = "Explore the sea your way.",
-				ImageUrl = isMobile ?  "images/RentABoatMobile.svg" : "images/RentABoat.svg"
-			},
-			new Card() {
-				Title = "All Day Tours",
-				Description = "Enjoy a full day on the water.",
-				ImageUrl = isMobile ? "images/AllDayToursMobile.svg" : "images/AllDayTours.svg"
-			},
-			new Card() {
-				Title = "Half Day Tours",
-				Description = "Perfect for quick adventures.",
-				ImageUrl = isMobile ? "images/HalfDayToursMobile.svg" : "images/HalfDayTours.svg"
-			},
-			new Card() {
-				Title = "Scooter Rentals",
-				Description = "Explore the city with ease.",
-				ImageUrl = isMobile ?  "images/RentAScooterMobile.svg" : "images/RentAScooter.svg"
-			}
-		};
-			StateHasChanged();
+    protected override async Task OnInitializedAsync()
+    {
+        CarouselService.OnPauseChanged += HandlePauseChanged;
+        Cards = await LoadCards();
+    }
 
-			await JS.InvokeVoidAsync("waitForImagesToLoad", ".carousel-image");
-			await Task.Delay(200);
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!firstRender)
+            return;
 
-			await JS.InvokeVoidAsync("resetCarouselState");
-			await JS.InvokeVoidAsync("collapseSeparator"); // Sakrij separator
-			await JS.InvokeVoidAsync("hideText"); // Sakrij tekst
-			await Task.Delay(200);
+        timer = new Timer(6500);
+        timer.Elapsed += async (_, _) =>
+        {
+            if (_disposed) return;
+            if (CarouselService.IsPaused) return;
+            await InvokeAsync(async () => await AnimateTransition(1));
+        };
+        timer.Start();
+    }
 
-			await JS.InvokeVoidAsync("expandSeparator");
-			await Task.Delay(200);
-			await JS.InvokeVoidAsync("showText");
+    private string GetItemClass(int idx)
+    {
+        // base class
+        var cl = "carousel-item";
+        if (!isAnimating && idx == currentIndex) return $"{cl} active show";
+        if (isAnimating)
+        {
+            if (idx == nextIndex) return $"{cl} entering";
+            if (idx == prevIndex) return $"{cl} exiting";
+            if (idx == currentIndex && nextIndex == -1) return $"{cl} active show";
+        }
+        if (idx == currentIndex) return $"{cl} active show";
+        return cl;
+    }
 
-			timer = new Timer(7000);
-			timer.Elapsed += async (sender, e) => await AnimateTransition();
-			timer.Start();
+    private async Task AnimateTransition(int direction)
+    {
+        if (isAnimating) return;
+        if (Cards.Count <= 1) return;
 
-			isFirstLoad = false;
-		}
+        isAnimating = true;
+        prevIndex = currentIndex;
+        nextIndex = (currentIndex + direction + Cards.Count) % Cards.Count;
 
-	}
+        // start enter animation for next slide while prev is visible
+        StateHasChanged();
+        await Task.Delay(enterMs); // next grows and centers, texts appear
 
-	private async Task AnimateTransition()
-	{
-		if (isAnimating) return;
-		isAnimating = true;
+        // keep show for a while
+        await Task.Delay(showMs);
 
-		// 1. Sakrijemo tekst
-		await JS.InvokeVoidAsync("hideText");
-		await Task.Delay(500);
+        // start exit: prev slides right & shrinks, next stays centered
+        StateHasChanged();
+        await Task.Delay(exitMs);
 
-		// 2. Sakrij separator liniju
-		await JS.InvokeVoidAsync("collapseSeparator");
-		await Task.Delay(500);
+        // finalize indices
+        currentIndex = nextIndex;
+        nextIndex = -1;
+        prevIndex = -1;
+        isAnimating = false;
+        StateHasChanged();
+    }
 
-		// 3. Smanjimo sliku za 40%
-		await JS.InvokeVoidAsync("shrinkImage");
-		await Task.Delay(800);
+    private async Task NextCards() => await AnimateTransition(1);
+    private async Task PreviousCards() => await AnimateTransition(-1);
 
-		// 4. Promijenimo slajd
-		currentIndex = (currentIndex + 1) % Cards.Count;
-		InvokeAsync(StateHasChanged);
-		await Task.Delay(50);
+    private async Task SetSlide(int index)
+    {
+        if (index == currentIndex) return;
+        if (isAnimating) return;
+        await AnimateTransition(index > currentIndex ? 1 : -1);
+    }
 
-		// 5. Povećamo novu sliku na 100%
-		await JS.InvokeVoidAsync("growImage");
-		await Task.Delay(1200);
+    private void HandlePauseChanged(bool paused)
+    {
+        if (paused) timer?.Stop();
+        else timer?.Start();
+    }
 
-		// 6. Prikazujemo separator liniju
-		await JS.InvokeVoidAsync("expandSeparator");
-		await Task.Delay(500);
+    public async ValueTask DisposeAsync()
+    {
+        _disposed = true;
+        CarouselService.OnPauseChanged -= HandlePauseChanged;
+        timer?.Stop();
+        timer?.Dispose();
+        await Task.CompletedTask;
+    }
 
-		// 7. Prikazujemo novi tekst
-		await JS.InvokeVoidAsync("showText");
+    private async Task<List<Card>> LoadCards()
+    {
+        int width = 1200;
+        try { width = await JS.InvokeAsync<int>("getWindowWidth"); } catch { }
+        bool mobile = width < 800;
 
-		isAnimating = false;
-	}
+        return new List<Card>
+        {
+            new("Speed Boat Services","Exclusive speed boat transfers across the Adriatic coast.",
+                mobile ? "images/SpeedBoatServiceMobile.svg" : "images/SpeedBoatService.svg"),
+            new("Rent a Boat","Discover hidden beaches and islands at your own pace.",
+                mobile ? "images/RentABoatMobile.svg" : "images/RentABoat.svg"),
+            new("All Day Tours","Spend the entire day exploring breathtaking destinations.",
+                mobile ? "images/AllDayToursMobile.svg" : "images/AllDayTours.svg"),
+            new("Half Day Tours","Perfect short adventures for unforgettable memories.",
+                mobile ? "images/HalfDayToursMobile.svg" : "images/HalfDayTours.svg"),
+            new("Scooter Rentals","Explore Šibenik quickly and easily.",
+                mobile ? "images/RentAScooterMobile.svg" : "images/RentAScooter.svg")
+        };
+    }
 
-	private async Task NextCards()
-	{
-		if (!isAnimating)
-		{
-			await AnimateTransition();
-		}
-	}
-
-	private async Task PreviousCards()
-	{
-		if (isAnimating) return;
-
-		isAnimating = true;
-		Console.WriteLine($"Prije: currentIndex = {currentIndex}");
-
-		// 1. Sakrijemo tekst
-		await JS.InvokeVoidAsync("hideText");
-		await Task.Delay(500);
-
-		// 2. Sakrij separator liniju
-		await JS.InvokeVoidAsync("collapseSeparator");
-		await Task.Delay(500);
-
-		// 3. Smanjimo sliku za 40%
-		await JS.InvokeVoidAsync("shrinkImage");
-		await Task.Delay(800);
-
-		// 4. Promijenimo slajd na prethodni
-		currentIndex = (currentIndex - 1 + Cards.Count) % Cards.Count;
-		InvokeAsync(StateHasChanged);
-		await Task.Delay(50);
-
-		// 5. Povećamo novu sliku na 100%
-		await JS.InvokeVoidAsync("growImage");
-		await Task.Delay(1200);
-
-		// 6. Prikazujemo separator liniju
-		await JS.InvokeVoidAsync("expandSeparator");
-		await Task.Delay(500);
-
-		// 7. Prikazujemo novi tekst
-		await JS.InvokeVoidAsync("showText");
-
-		isAnimating = false;
-	}
-
-	private async Task SetSlide(int index)
-	{
-		if (isAnimating || index == currentIndex) return;
-
-		isAnimating = true;
-
-		try
-		{
-			await Task.Delay(100); // Čekaj da DOM završi s renderiranjem
-
-			// 1. Sakrijemo tekst
-			await JS.InvokeVoidAsync("hideText");
-			await Task.Delay(500);
-
-			// 2. Sakrijemo separator liniju
-			await JS.InvokeVoidAsync("collapseSeparator");
-			await Task.Delay(500);
-
-			// 3. Smanjimo sliku za 40%
-			await JS.InvokeVoidAsync("shrinkImage");
-			await Task.Delay(800);
-
-			// 4. Postavimo `currentIndex` na kliknutu točku
-			currentIndex = index;
-
-			// Ponovno renderiranje
-			await InvokeAsync(StateHasChanged);
-			await Task.Delay(50);
-
-			// 5. Povećamo novu sliku na 100%
-			await JS.InvokeVoidAsync("growImage");
-			await Task.Delay(1200);
-
-			// 6. Prikazujemo separator liniju
-			await JS.InvokeVoidAsync("expandSeparator");
-			await Task.Delay(500);
-
-			// 7. Prikazujemo novi tekst
-			await JS.InvokeVoidAsync("showText");
-
-			isAnimating = false;
-		}
-		catch (Exception ex)
-		{
-			Console.WriteLine($"Greška u SetSlide: {ex.Message}");
-		}
-	}
-
-	private int PreviousIndex() => (currentIndex - 1 + Cards.Count) % Cards.Count;
-
-	public class Card
-	{
-		public string Title { get; set; }
-		public string ImageUrl { get; set; }
-		public string Description { get; set; }
-	}
+    public record Card(string Title, string Description, string ImageUrl);
 }
