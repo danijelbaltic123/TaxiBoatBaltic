@@ -1,0 +1,29 @@
+﻿@inject IJSRuntime JS
+<div class="map-wrapper">
+    <h2 class="map-title">Šibenik Panorma Tour – Usual stops</h2>
+    <div id="PanoramaMap" class="map"></div>
+	<div class="promo">
+		<p>
+			The panorama tour is a short trip for those who want to taste the pleasure of boating and along the way see Šibenik and its canal from another perspective.
+			With this view, you can see how Šibenik has been a very important city in Croatian history throughout history.
+			Also with this ride, our drivers will tell interesting historical moments related to Šibenik and show you some of the interesting places such as the Fortress of St. Nicholas and Hitler’s eyes.
+			Yes, you read that right …
+			<b><u>There are also no hidden costs, meaning everything is included in the price, from fuel and the cost of the skipper.</u></b>
+			Our boats have a capacity of up to 7 people and there is no mixing with other groups until the boat's capacity is reached.
+		</p>
+		<div class="cTa">
+			<p><b>Price: 800€</b></p>
+			<PopUpButton />
+		</div>
+	</div>
+</div>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("initPanoramaTourMap");
+        }
+    }
+}

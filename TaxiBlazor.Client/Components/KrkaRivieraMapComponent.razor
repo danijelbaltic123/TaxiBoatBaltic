@@ -1,0 +1,37 @@
+﻿@inject IJSRuntime JS
+
+<div class="map-wrapper">
+    <h2 class="map-title">NP Krka + Riviera – Usual stops</h2>
+    <div id="krkaRivieraMap" class="map"></div>
+	<div class="promo">
+		<p>
+			In this offer for a full day trip, we have combined two half-day trips into one for those who want to use the day and explore in detail the Šibenik area that offers a handful of beauties.
+			Although everything is flexible, the idea of​​the trip is to start from Šibenik or somewhere nearby and through the canyon of the river, Krka to reach the small town of Skradin and there board the boats of the Krka National Park.
+			There you will see a handful of vegetation as well as beautiful waterfalls and other sights.
+			Then the boat is waiting for you in Skradin, where the boat will take you from the National Park and you can see Skradin.
+			Then we go through Prukljan Lake where we can if you want to anchor in one of the bays and take the opportunity to swim or maybe enjoy a drink or our lunch package.
+			Then we get out of the fresh water and go to the sea towards one of the three islands, Zlarin Tijat or Prvić, where each offers something for everyone.
+			The island of Zlarin is a small place known for corals, so near the place, there is a coral museum and beautiful beaches.
+			Tijat Island is an uninhabited island with a beautiful beach bar that offers top-quality cocktails, just what you expect for summer enjoyment.
+			We can also anchor and simply experience everything on board with the beautiful and clean sea.
+			And the third island is an island with two small places with lots of quality restaurants.
+			We save this island for the end so you can dine by the sea in one of the many restaurants, but there are not always beaches where you can take advantage of every ray of sunshine that day.
+			<b><u>Aditonal coast is enterance tickets for the Ncional park Krka, everything else is included in the price, from fuel to drinks and food on the boat and the cost of the skipper.</u></b>
+			Our boats have a capacity of up to 7 people and there is no mixing with other groups until the boat's capacity is reached.
+		</p>
+		<div class="cTa">
+			<p><b>Price: 500€</b></p>
+			<PopUpButton />
+		</div>
+	</div>
+</div>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("initKrkaRivieraTourMap");
+        }
+    }
+}

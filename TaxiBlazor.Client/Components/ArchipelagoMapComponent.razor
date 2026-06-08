@@ -1,0 +1,37 @@
+﻿@inject IJSRuntime JS
+<div class="map-wrapper">
+    <h2 class="map-title">Šibenik Archipelago – Usual stops</h2>
+    <div id="archipelagoMap" class="map"></div>
+	<div class="promo">
+		<p>
+			This is another full-day trip that will allow you fewer boat rides and more enjoyment of the beauties of the Šibenik archipelago.
+			With this trip, we target those who want to enjoy only the clear sea and beautiful scenery without a lot of people around them.
+			This trip offers the already mentioned three islands, Zlarin, Prvić, and Tijat, and an additional 2 or 3 islands, which would be the island of Žirije and Kaprije for sure, and, if you wish, anchoring in one of the many bays in the Šibenik archipelago.
+			So this trip is not strictly strict where when you have to be, but everything is left to you.
+			So you can decide how long we will stay somewhere and what exactly you want. We will try to achieve that.
+			<b><u>There are also no hidden costs, meaning everything is included in the price, from fuel to drinks and food on the boat and cost of the skipper.</u></b>
+			Our boats have a capacity of up to 7 people and there is no mixing with other groups until the boat's capacity is reached.
+		</p>
+		<div class="cTa">
+			<p><b>Price: 500€</b></p>
+			<PopUpButton />
+		</div>
+	</div>
+</div>
+
+@code {
+	private BookingForm bookingPopup;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("initArchipelagoTourMap");
+        }
+    }
+
+	private void ShowPopup()
+	{
+		bookingPopup.Show();
+	}
+}

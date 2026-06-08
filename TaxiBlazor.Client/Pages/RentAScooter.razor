@@ -1,0 +1,79 @@
+﻿@page "/rent-a-scooter"
+
+<PageTitle>Rent a scooter</PageTitle>
+
+<div class="scooter-heading">
+	<h1>Rent a scoter in Šibenik</h1>
+
+	<h4>Move around Šibenik area during summer traffic</h4>
+</div>
+@foreach (var ccGroup in Scooters.GroupBy(s => s.Cc).OrderByDescending(g => g.Key))
+{
+	<section class="scooter-section">
+		<h2 class="section-title">@ccGroup.Key cc scooters</h2>
+
+		<div class="scooter-grid">
+			@foreach (var scooter in ccGroup)
+			{
+				<div class="scooter-card">
+					<img src="@scooter.ImageUrl" alt="@scooter.Name" class="scooter-img" />
+					<div class="scooter-info">
+						<h3 class="scooter-name">@scooter.Name</h3>
+						<p class="scooter-cc">@scooter.Cc cc</p>
+						<p class="scooter-price">@scooter.PricePerDay€ / day</p>
+						<button class="reserve-btn" @onclick=ShowPopup>Rent me</button>
+					</div>
+				</div>
+			}
+		</div>
+		<p class="license-note">
+			@GetLicenseNote(ccGroup.Key)
+		</p>
+	</section>
+}
+<BookingForm @ref="bookingPopup">
+
+</BookingForm>
+
+@code {
+	private BookingForm bookingPopup;
+
+	private void ShowPopup()
+	{
+		bookingPopup.Show();
+	}
+	public class Scooter
+	{
+		public string Name { get; set; }
+		public string ImageUrl { get; set; }
+		public int Cc { get; set; }
+		public decimal PricePerDay { get; set; }
+	}
+
+	private List<Scooter> Scooters = new()
+	{
+		new Scooter { Name = "Suzuki Burgman (Gray)", Cc = 400, ImageUrl = "images/Scooters/Suzuki_Burgman.png", PricePerDay = 45 },
+		new Scooter { Name = "Suzuki Burgman (Black)", Cc = 400, ImageUrl = "images/Scooters/SUZUKI-Burgman-400.jpg", PricePerDay = 45 },
+
+		new Scooter { Name = "Sym Jet 125", Cc = 125, ImageUrl = "images/Scooters/Sym_Jet_125.jpg", PricePerDay = 40 },
+		new Scooter { Name = "Aprilia SR 125", Cc = 125, ImageUrl = "images/Scooters/Aprilia-SR-125.jpg", PricePerDay = 40 },
+		new Scooter { Name = "Piaggio Fly 125", Cc = 125, ImageUrl = "images/Scooters/Piaggio_Fly_125.jpeg", PricePerDay = 40 },
+
+		new Scooter { Name = "Piaggio Typhoon 50", Cc = 50, ImageUrl = "images/Scooters/Piaggio_Typhoon_50.jpeg", PricePerDay = 35 },
+		new Scooter { Name = "Piaggio fly 50", Cc = 50, ImageUrl = "images/Scooters/Piaggio_Fly_50.jpeg", PricePerDay = 35 },
+		new Scooter { Name = "Derbi Boulevard 50", Cc = 50, ImageUrl = "images/Scooters/Derbi50.jpg", PricePerDay = 35 },
+		new Scooter { Name = "Peugeot JetForce 50", Cc = 50, ImageUrl = "images/Scooters/Peugeout_JetForce_50.jpg", PricePerDay = 35 },
+		new Scooter { Name = "Peugeot Speedfight 50", Cc = 50, ImageUrl = "images/Scooters/Peugeot_Speedfight_50.jpeg", PricePerDay = 35 },
+		new Scooter { Name = "Aprilia SR 50", Cc = 50, ImageUrl = "images/Scooters/Aprilia_SR_50.jpg", PricePerDay = 35 },
+	};
+	private string GetLicenseNote(int cc)
+	{
+		return cc switch
+		{
+			400 => "Requires A category driver's license.",
+			125 => "Requires A1 category driver's license.",
+			50 => "Requires AM or B category driver's license.",
+			_ => string.Empty
+		};
+	}
+}

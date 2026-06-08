@@ -1,0 +1,115 @@
+﻿.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 5rem;
+}
+
+    .content h1 {
+        text-align: center;
+    }
+
+.paragph {
+    display: flex;
+    flex-direction: row;
+    padding-top: 1rem;
+}
+
+    .paragph p {
+        text-align: center;
+        display: flex;
+        align-items: center;
+        margin-inline: 3rem;
+        font-size: 1.3vw;
+    }
+
+    .paragph video {
+        max-width: 30vw;
+        border-radius: 2rem;
+        max-height: 45vw;
+        margin: 3rem;
+    }
+
+.icons {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 6rem;
+    justify-content: center;
+    margin: 3rem;
+}
+
+.icon-box {
+    border-color: #2c3e50;
+    border-radius: 2rem;
+    border: solid 1px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-height: -webkit-fill-available;
+}
+
+    .icon-box img {
+        width: 3.5vw;
+        margin: 1rem;
+    }
+
+    .icon-box p {
+        font-size: 1vw;
+        margin-inline: 1rem
+    }
+
+.call-to-action {
+    background-image: url("images/TaxiBoatŠibenik.jpg");
+    background-position: 50% 40%;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: space-evenly;
+    height: 17rem;
+    padding-right: 1rem;
+}
+
+@media (max-width: 800px) {
+    .paragph {
+        display: flex;
+        flex-direction: column;
+    }
+
+        .paragph video {
+            max-width: 100vw;
+            max-height: 170vw;
+            margin: 0;
+            padding: 1rem;
+        }
+
+        .paragph p {
+            font-size: 4vw;
+            margin-inline: 1rem;
+        }
+
+    .icons {
+        margin: 2rem;
+        gap: 2rem;
+    }
+
+    .icon-box {
+    }
+
+        .icon-box img {
+            width: 17vw;
+        }
+
+        .icon-box p {
+            font-size: 3vw
+        }
+
+    .call-to-action {
+        background-image: url("images/TaxiBoatŠibenikMobile.jpg");
+        -webkit-background-size: cover;
+    }
+
+        .call-to-action h2 {
+            text-align: end;
+        }
+}
